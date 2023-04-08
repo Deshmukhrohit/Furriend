@@ -6,11 +6,6 @@
     app:startDestination="@id/menuProfile">
 
     <fragment
-        android:id="@+id/menuProfile"
-        android:name="com.example.furriends.ProfileFragment"
-        android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
-    <fragment
         android:id="@+id/menuNotifications"
         android:name="com.example.furriends.NotificationFragment"
         android:label="Notification"
@@ -20,4 +15,20 @@
         android:name="com.example.furriends.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/menuSupport"
+        android:name="com.example.furriends.Support_Fragment"
+        android:label="Support_"
+        tools:layout="@layout/fragment_support_" />
+    <fragment
+        android:id="@+id/menuProfile"
+        android:name="com.example.furriends.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/menulocation"
+        android:name="com.example.furriends.LocationFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_location" />
+
 </navigation>

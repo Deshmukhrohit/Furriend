@@ -21,12 +21,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
 public class Register extends AppCompatActivity {
 
     public static final String TAG = "TAG";
@@ -35,13 +37,9 @@ public class Register extends AppCompatActivity {
     TextView mloginBtn;
     ProgressBar progressBar;
 
-
-    FirebaseFirestore fstore;
-    String userID;
+    DatabaseReference databaseReference;
     FirebaseAuth fAuth;
-
-
-
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +54,9 @@ public class Register extends AppCompatActivity {
         mloginBtn = findViewById(R.id.createtext);
         progressBar = findViewById(R.id.progressBar);
 
-
         fAuth = FirebaseAuth.getInstance();
-        fstore = FirebaseFirestore.getInstance();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         if(fAuth.getCurrentUser() != null)
         {
@@ -66,22 +64,17 @@ public class Register extends AppCompatActivity {
             finish();
         }
 
-
-
-
-        mloginBtn.setOnClickListener(new View.OnClickListener()
-        {
+        mloginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(),Login.class));
             }
         });
 
-
-        mRegisterBtn.setOnClickListener(new View.OnClickListener()
-        {
+        mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 final String email = mEmail.getText().toString().trim();
                 String password = mPassword.getText().toString().trim();
                 final String fullName = mFullName.getText().toString();
@@ -102,7 +95,6 @@ public class Register extends AppCompatActivity {
                 }
                 progressBar.setVisibility(View.VISIBLE);
 
-
                 fAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -122,23 +114,8 @@ public class Register extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(),"User Created",Toast.LENGTH_SHORT).show();
                             userID = fAuth.getCurrentUser().getUid();
-                            DocumentReference documentReference = fstore.collection("user").document(userID);
-                            Map<String,Object> user = new HashMap<>();
-                            user.put("fName",fullName);
-                            user.put("email",email);
-                            user.put("phone",phone);
-                            documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    Log.d(TAG,"onsucces:user profile is created for " + userID);
-
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d(TAG,"onFailure: " + e.toString());
-                                }
-                            });
+                            User user = new User(fullName, email, phone);
+                            databaseReference.child(userID).setValue(user);
 
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
                         }
@@ -152,5 +129,6 @@ public class Register extends AppCompatActivity {
             }
         });
     }
+
 
 }
